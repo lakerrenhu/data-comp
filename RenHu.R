@@ -100,12 +100,43 @@ library(lmtest)
 dwtest(linear_reg) #Durbin-Watson test
 # DW = 1.9663, p-value = 0.2988.
 # Null Hypothesis: Errors are serially UNcorrelated.
-# We fail to reject the Durbin-Watson test's null hypothesis (p-value 0.2988).
+# We fail to reject the Durbin-Watson test’s null hypothesis (p-value 0.2988).
 
 # 4. Residuals have constant variance
 # plot(linear_reg)
 # the plot of residuals VS fitted values shows there may have about 2-3 outliers in this dataset.
 # except for the 2-3 outilers, we can assume the residuals have constant variance.
+
+#### contribution of base sales, Trade, media
+#decay parameter = 0.30
+
+# contribution of base sales
+contr_base = linear_reg$coefficients[1]/linear_reg$fitted.values
+min(contr_base)  # 58.85%
+max(contr_base)  # 91.82%
+mean(contr_base) # 80.63%
+
+# contribution of trade
+trade_cof = NULL
+for (i in 1:148){
+  trade_cof = rbind(trade_cof,linear_reg$coefficients[9:11])
+}
+contr_trade = dataset[,9:11]*trade_cof
+contr_trade2 = rep(0,148)
+
+for (i in 1:148){
+  contr_trade2[i]=sum(contr_trade[i,])
+}
+contr_trade3 = contr_trade2/linear_reg$fitted.values
+min(contr_trade3) # 5.86%
+max(contr_trade3) # 9.76%
+mean(contr_trade3) # 7.86%
+
+# contribution of media
+contr_media = (linear_reg$fitted.values - linear_reg$coefficients[1] - contr_trade2)/linear_reg$fitted.values
+min(contr_media) # 0.21%
+max(contr_media) # 34.88%
+mean(contr_media) # 11.50%
 
 
 
