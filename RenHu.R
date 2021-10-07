@@ -8,7 +8,7 @@
 # 3 activities: PriceChange,	Display,	EndCap
 # number of coefficients that need to be estimated: 7+3+1=11
 # root-mean-squre-error (RMSE) as a metric is used.
-# linear regression will be used below at first.
+# linear regression will be used below at first to find the relationship between sales and 7 channels,3 activities, base sales.
 # For the seasonal effect of base sales, bayesian hierarchical model (multilevel model) is used below via library(brms).
 
 # summary from linear regression:
