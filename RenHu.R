@@ -33,6 +33,12 @@
 #     random part (fall):  -317.14
 #     random part (winter):-373.41
 
+# Part 2: compare models based on different machine learning methods to decide the best model. This part is optional, not required by competition.
+# This part is shown in the appendix of solution code. Linear regression, ridge regression, Lasso, support vector machine (linear kernel),
+# elastic net, Bayesian linear regression and random forest are used below to fit different learning models. The dataset
+# is partitioned into training set (75%) and test set (25%). Root-mean-square-error (RMSE) is used as the performance
+# metric based on test set.
+
 
 
 ### read datasets 
