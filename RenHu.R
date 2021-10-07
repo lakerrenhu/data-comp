@@ -8,7 +8,30 @@
 # 3 activities: PriceChange,	Display,	EndCap
 # number of coefficients that need to be estimated: 7+3+1=11
 # root-mean-squre-error (RMSE) as a metric is used.
-# linear regression will be used below.
+# linear regression will be used below at first.
+# For the seasonal effect of base sales, bayesian hierarchical model (multilevel model) is used below via library(brms).
+
+# summary from linear regression:
+# (1) The contribution of base, trade and media on average are 80.63%, 7.86%, 11.50%, respectively.
+# (2) 7 channels except Audio have positive effect on the total sales. The most and least effective channels are TV and
+# Audio. Increasing 1 GRP in channels can add the total sales by $ 9343.95 where TV, Facebook, Twitter, Amazon,
+# Audio, Print and Digital_AO contribute $ 2909.68, $ 2620.53, $ 2093.97, $ -1260.3, $ 598.85, $ 935.56 on average,respectively.
+# (3) 3 activities except price change have positive effect on the total sales. Each 1% increase in the percentage of
+# stores engaging in Display and EndCap may increase the total sales by $ 572.85 and $ 274.03 on average,
+# respectively. Engaging in price change (=1) may decrease the total sales by $ 2791.75 on average.
+# (4) More investment in channels except for Audio would be more likely to add the total sales. Without price change,
+# trade activities (Display and EndCap) can increase the total sales.
+
+# summary from bayesian hierarchical model (multilevel model):
+# (1) mixed effect model via lmer from lme4 fails due to the singularity fit based on data given.
+# (2) bayesian hierarchical model is fitted successfully, which can be checked by code below.
+# (3) the seasonal effect of base sales can be represented by the random effect of the intercept in the model.
+# (4) base sales (intercept) consists of the bias (fixed) part and seasonsal (random) part.
+#     bias (fixed) part:   316690 (mean)
+#     random part (spring):621.54
+#     random part (summer):392
+#     random part (fall):  -317.14
+#     random part (winter):-373.41
 
 
 
@@ -100,7 +123,7 @@ library(lmtest)
 dwtest(linear_reg) #Durbin-Watson test
 # DW = 1.9663, p-value = 0.2988.
 # Null Hypothesis: Errors are serially UNcorrelated.
-# We fail to reject the Durbin-Watson test’s null hypothesis (p-value 0.2988).
+# We fail to reject the Durbin-Watson test's null hypothesis (p-value 0.2988).
 
 # 4. Residuals have constant variance
 # plot(linear_reg)
@@ -139,6 +162,66 @@ max(contr_media) # 34.88%
 mean(contr_media) # 11.50%
 
 
+### multilevel model or mixed effect model
+
+# consider the base sales has the seasonal effect, 
+# we can use mixed effect model and have random intercept effect, according to the seasons (spring, summer, fall, winter)
+
+activity$season = rep(0,n)
+
+for (i in 1:n){                                                                 # convert date into season factors
+  week_ = as.data.frame(str_split(activity$Week[i], "-"))
+  month = as.numeric(week_[2,])
+  if (month >=1 & month <=3){
+    activity$season[i] = 1 # spring
+  }
+  if (month >=4 & month <=6){
+    activity$season[i] = 2 # summer
+  }
+  if (month >=7 & month <=9){
+    activity$season[i] = 3 # fall
+  }
+  if (month >=10 & month <=12){
+    activity$season[i] = 4 # winter
+  }
+  cat("i = ",i,"\t")
+  print(activity$season[i])
+}
+
+dataset$season = activity$season
+attach(dataset)
+
+### mixed effect model
+library(lme4)
+
+mix_model = lmer(sales~TV+Facebook+Twitter+Amazon+Audio+Print+Digital_AO+PriceChange+Display+EndCap+(1 | season),data=dataset)
+fit_y = predict(mix_model,dataset)     
+rmse = sqrt(mean((fit_y-dataset$sales)^2))                                      # training RMSE = 9053.9
+summary(mix_model) # singularity fit issue warning, this model fails
+
+coef(mix_model)  #estimated coefficients in each group
+fixef(mix_model) #average coefficients
+ranef(mix_model) # group-level errors for the intercepts and slopes
+
+
+### bayesian hierarchical model
+
+library(brms)
+#prior <- c(set_prior("normal(1000,10000)", class = "b"))
+model1_brm=brm(sales~TV+Facebook+Twitter+Amazon+Audio+Print+Digital_AO+PriceChange+Display+EndCap+(1 | season), data=dataset
+               ,iter=3000,chains=4,cores=4)
+summary(model1_brm)
+plot(model1_brm)
+
+model1_brm$fit
+# intercept has fixed part and random part from season:
+# intercept fixed part: 316690.12 (mean),
+# random part (spring):621.54
+# random part (summer):392
+# random part (fall):-317.14
+# random part (winter):-373.41
+
+conditional_effects(model1_brm)
 
 ################################ Appendix      ##########################################################################
 ### Tune decay parameter (alpha) in media execution model 
