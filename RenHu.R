@@ -22,7 +22,7 @@
 # (4) More investment in channels except for Audio would be more likely to add the total sales. Without price change,
 # trade activities (Display and EndCap) can increase the total sales.
 
-# Assess the adequacy of model from the aspects of the significance of model and the normality, independence,
+# assess the adequacy of model from the aspects of the significance of model and the normality, independence,
 # constancy of residuals. Note the results below is based on the decay parameter = 0.3 in media execution.
 # a) The fitted linear regression model is significant with F-statistics = 310.8 with small p-value < 0.05.
 # b) P-values of t-test shows some independent variables and intercept (base sales) are significant. Significant
