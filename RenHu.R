@@ -22,6 +22,17 @@
 # (4) More investment in channels except for Audio would be more likely to add the total sales. Without price change,
 # trade activities (Display and EndCap) can increase the total sales.
 
+# Assess the adequacy of model from the aspects of the significance of model and the normality, independence,
+# constancy of residuals. Note the results below is based on the decay parameter = 0.3 in media execution.
+# a) The fitted linear regression model is significant with F-statistics = 310.8 with small p-value < 0.05.
+# b) P-values of t-test shows some independent variables and intercept (base sales) are significant. Significant
+# indicators are intercept (base sales), TV, Facebook, Print, if p-value threshold alpha = 0.05.
+# c) R-square = 0.9578 indicates that sales and independent variables may have linear relationships.
+# d) The plot of residuals VS fitted values and QQ plot show the residuals are normally distributed.
+# e) The Durbin-Watson test with p-value = 0.2988 indicates the residuals are independent.
+# f) Though there may have 2-3 outliers found in the plot of residuals VS fitted values, we can still assume the residuals
+# have constant variance.
+
 # summary from bayesian hierarchical model (multilevel model):
 # (1) mixed effect model via lmer from lme4 fails due to the singularity fit based on data given.
 # (2) bayesian hierarchical model is fitted successfully, which can be checked by code below.
