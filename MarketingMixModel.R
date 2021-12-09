@@ -279,7 +279,7 @@ fit_y = predict(linear_reg,dataset)
 rmse = sqrt(mean((fit_y-dataset$sales)^2))  
 
 Rsquare = cbind(Rsquare,metric$r.squared)
-RMSE = cbind(MSE,rmse)
+RMSE = cbind(RMSE,rmse)
 F_value = cbind(F_value,metric$fstatistic)
 
 cat("alpha=",alpha,"\n")
